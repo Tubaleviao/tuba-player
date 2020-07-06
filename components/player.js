@@ -4,7 +4,7 @@ import { SafeAreaView, AppState, View, Text, StyleSheet, TouchableHighlight, Sta
 import { createStackNavigator } from '@react-navigation/stack'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Upload from './upload'
-//import Progress from './progress'
+import Progress from './progress'
 import AsyncStorage from '@react-native-community/async-storage'
 import tp from 'react-native-track-player'
 const Stack = createStackNavigator();
@@ -42,7 +42,7 @@ const Player = (props) => {
 	const pause = async () => {tp.pause(); setPlaying(false)} // so.pauseAsync(); 
 
 	//const backwards = async () => tp.skipToPrevious()
-	const forward = async () => tp.skipToNext()
+	const forward = async () => tp.skipToNext().catch(inite)
 	//const repeat = async () => {tp.pause()} // so.pauseAsync()
 	//random = async () => this.state.so.pauseAsync()
 	const setTrack = v => { tp.seekTo(v/1000); setSliding(false); setTrackPos(v)} // so.setPositionAsync(v);
@@ -73,7 +73,7 @@ const Player = (props) => {
 			]
 		})
 		await tp.add(songs.map(s => {
-			const uri = encodeURI(`https://tuba.work/users/${user}/${s}`)
+			const uri = `https://tuba.work/users/${user}/${s}`
 			return { ...t, id:s, title: s, url: uri}
 		}))
 		setMusic(songs[0])
@@ -96,12 +96,22 @@ const Player = (props) => {
 			if(st.didJustFinish) loadSong(getNewSong())
 		}
 	}
+
+	let onTrackChange;
+	let onEnded;
 	
 	useEffect(() => {
 		setMounted(true)
+		onEnded = tp.addEventListener('playback-queue-ended', async data => inite())
+		onTrackChange = tp.addEventListener('playback-track-changed', async data => {    
+            const track = await tp.getTrack(data.nextTrack);
+            if(track != null) setMusic(track.title);
+        })
 		inite()
 		return function cleanup(){ 
 			setMounted(false)
+			onTrackChange.remove()
+			onEnded.remove()
 		}
 	}, [])
 
@@ -112,7 +122,7 @@ const Player = (props) => {
 			{!songs.length ? ( <Upload /> ) : (
 				<View style={styles.container}>
 					<Text style={styles.container}>{music}</Text>
-					
+					<Progress ss={setSliding} s={sliding} />
 					<View style={styles.icons}>
 						<View style={styles.iconContainer}>
 							{playing ? icon(pause) : icon(play)} 
@@ -125,7 +135,6 @@ const Player = (props) => {
 			<SongList songList={songs} navigation={navigation} play={loadSong}/>
 		</SafeAreaView>)
 }
-// <Progress ss={setSliding} s={sliding} />
 
 export default Player
 
