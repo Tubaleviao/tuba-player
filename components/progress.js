@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import Slider from '@react-native-community/slider'
-//import tp from 'react-native-track-player'
+import tp from 'react-native-track-player'
 
 class Progress extends tp.ProgressComponent {
 
