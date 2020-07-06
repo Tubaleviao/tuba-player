@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Player from './components/player'
@@ -10,7 +10,6 @@ import { Button, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Upload from './components/upload'
-import { CommonActions } from '@react-navigation/native';
 
 const Logout = ({navigation}) => {
   const out = () => {
@@ -22,7 +21,7 @@ const Logout = ({navigation}) => {
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
- const App = (tp) => () => {
+ const App = () => {
   const defaultOption = {
     headerTintColor: '#00ff00',
     headerStyle: {
@@ -70,7 +69,7 @@ const Drawer = createDrawerNavigator()
             ),
           })} />
           <Stack.Screen name="Signup" component={Signup} options={defaultOption} />
-          <Stack.Screen name="Profile" component={Player(tp)} />
+          <Stack.Screen name="Profile" component={Player} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

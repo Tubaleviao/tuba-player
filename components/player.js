@@ -6,11 +6,11 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Upload from './upload'
 //import Progress from './progress'
 //import AsyncStorage from '@react-native-community/async-storage'
-//import tp from 'react-native-track-player'
-
+import tp from 'react-native-track-player'
+//let tp = {}
 const Stack = createStackNavigator();
 
-const Player = (tp) => (props) => {
+const Player = (props) => {
 
 	const {useState, useEffect} = React
 	const {navigation} = props
@@ -35,7 +35,7 @@ const Player = (tp) => (props) => {
 	const [playing, setPlaying] = useState(false)
 	const [error, setError] = useState(false)
 	const [mounted, setMounted] = useState(true)
-	const t = {title: '', artist: '', album: '', genre: '', 
+	const t = { artist: '', album: '', genre: '', 
 				date: '2020-06-29T07:00:00+00:00', artwork:'https://tuba.work/img/icon.ico'}
 	
 	const play =  async() => { tp.play(); setPlaying(true)} // so.playAsync();
@@ -64,8 +64,8 @@ const Player = (tp) => (props) => {
 			capabilities: [
 				tp.CAPABILITY_PLAY,
 				tp.CAPABILITY_PAUSE,
-				//tp.CAPABILITY_SKIP_TO_NEXT,
-				//tp.CAPABILITY_SKIP_TO_PREVIOUS,
+				tp.CAPABILITY_SKIP_TO_NEXT,
+				tp.CAPABILITY_SKIP_TO_PREVIOUS,
 				tp.CAPABILITY_STOP
 			],
 			compactCapabilities: [
@@ -74,8 +74,8 @@ const Player = (tp) => (props) => {
 			]
 		})
 		await tp.add(songs.map(s => {
-			const uri = `https://tuba.work/users/${user}/${s}`
-			return { ...t, id:s, title: s, uri: uri}
+			const uri = encodeURI(`https://tuba.work/users/${user}/${s}`)
+			return { ...t, id:s, title: s, url: uri}
 		}))
 		setMusic(songs[0])
 		tp.play() 
