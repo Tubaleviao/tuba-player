@@ -65,7 +65,7 @@ const Drawer = createDrawerNavigator()
             ...defaultOption,
             headerTitle: "Tuba Player",
             headerRight: () => (
-              <Icon onPress={() => savFun()} size={32} color='#00ff00' name="bars"/>
+              <Icon style={{margin: 10}} onPress={() => savFun()} size={32} color='#00ff00' name="bars"/>
             ),
           })} />
           <Stack.Screen name="Signup" component={Signup} options={defaultOption} />

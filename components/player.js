@@ -112,6 +112,7 @@ const Player = (props) => {
 			setMounted(false)
 			onTrackChange.remove()
 			onEnded.remove()
+			tp.destroy()
 		}
 	}, [])
 

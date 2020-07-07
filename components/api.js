@@ -26,7 +26,6 @@ class Api {
 	async getToken(body){
 		let result
 		try{
-			console.log(`jwt`)
 			const response = await fetch(`https://tuba.work/jwt`, {
 				method: 'POST',
 				headers: {'Accept': 'application/json',
