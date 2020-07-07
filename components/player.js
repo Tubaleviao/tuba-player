@@ -1,13 +1,11 @@
 import React from 'react'
 import SongList from './songList'
 import { SafeAreaView, AppState, View, Text, StyleSheet, TouchableHighlight, StatusBar } from 'react-native'
-import { createStackNavigator } from '@react-navigation/stack'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Upload from './upload'
 import Progress from './progress'
 import AsyncStorage from '@react-native-community/async-storage'
 import tp from 'react-native-track-player'
-const Stack = createStackNavigator();
 
 const Player = (props) => {
 

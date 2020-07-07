@@ -1,4 +1,4 @@
-import {AsyncStorage} from '@react-native-community/async-storage'
+import AsyncStorage from '@react-native-community/async-storage'
 
 class Api {
 
@@ -8,9 +8,11 @@ class Api {
 		user = JSON.parse(user)
 		form.append("token", user.token)
 		form.append("audio", audio)
+		console.log(audio)
 		let res
 		try{
-			let response = await fetch(`https://tuba.work/audio/${user.username}`, {
+			let url = `https://tuba.work/audio/${user.username}`
+			let response = await fetch(url, {
 				method: 'POST',
 				headers: {'Content-Type': 'multipart/form-data',
 							'token': user.token},
@@ -19,6 +21,7 @@ class Api {
 			res = await response.json()
 		}catch(err){
 			console.log('eer: ', err)
+			res = {ok: false, song: null, msg: `${err}`}
 		}
 		return {ok: res.ok, song: res.song, msg: res.msg}
 	}

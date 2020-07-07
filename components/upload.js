@@ -2,8 +2,8 @@ import React from 'react'
 import { SafeAreaView, Button, StyleSheet, Text, ActivityIndicator } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import Api from './api'
-//import * as DocumentPicker from 'expo-document-picker';
 import DocumentPicker from 'react-native-document-picker'
+import RNFS from 'react-native-fs';
 
 class Upload extends React.Component{
 
@@ -21,8 +21,13 @@ class Upload extends React.Component{
 			const res = await DocumentPicker.pick({
 				type: [DocumentPicker.types.audio],
 			})
-			file = {...res} // uri, type, name, size
+			console.log(`here we go ${res.uri}`)
+			const {path} = await RNFS.stat(res.uri)
+			console.log(`path: ${path}`)
+			file = {uri: path, type: res.type, name:res.name, size:res.size} 
+			// uri, type, name, size
 		} catch (err) {
+			console.log(err)
 			this.setState({loading: false, error: "Error, please try again"})
 		}
 
@@ -32,7 +37,7 @@ class Upload extends React.Component{
 				await AsyncStorage.setItem('newSong', worked.song)
 				this.setState({loading: false})
 				this.props.navigation.goBack()
-			}else{this.setState({error: worked.msg})}
+			}else{this.setState({error: worked.msg, loading: false})}
 		}
 	}
 
