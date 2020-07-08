@@ -21,17 +21,21 @@ class Upload extends React.Component{
 			const res = await DocumentPicker.pick({
 				type: [DocumentPicker.types.audio],
 			})
-			console.log(`here we go ${res.uri}`)
-			const {path} = await RNFS.stat(res.uri)
-			console.log(`path: ${path}`)
-			file = {uri: path, type: res.type, name:res.name, size:res.size} 
-			// uri, type, name, size
+			let tmpPath = `${RNFS.DocumentDirectoryPath}/tmp`
+			let fullFile = await RNFS.readFile(res.uri, 'base64')
+			await RNFS.writeFile(tmpPath, fullFile, 'base64')
+			file = {
+				name: 'audio', 
+				filename: res.name, 
+				filepath: tmpPath, 
+				filetype: res.type
+			}
 		} catch (err) {
 			console.log(err)
 			this.setState({loading: false, error: "Error, please try again"})
 		}
 
-		if(file.type){
+		if(file.filetype){
 			const worked = await Api.sendAudio(file)
 			if(worked.ok){
 				await AsyncStorage.setItem('newSong', worked.song)

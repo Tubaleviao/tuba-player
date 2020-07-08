@@ -1,29 +1,30 @@
 import AsyncStorage from '@react-native-community/async-storage'
+import RNFS from 'react-native-fs';
 
 class Api {
 
 	async sendAudio(audio){
-		const form = new FormData()
 		let user = await AsyncStorage.getItem('user')
 		user = JSON.parse(user)
-		form.append("token", user.token)
-		form.append("audio", audio)
-		console.log(audio)
 		let res
 		try{
 			let url = `https://tuba.work/audio/${user.username}`
-			let response = await fetch(url, {
+			const r = await RNFS.uploadFiles({
+				toUrl: url, 
+				files: [audio], 
 				method: 'POST',
-				headers: {'Content-Type': 'multipart/form-data',
-							'token': user.token},
-				body: form
-			})
-			res = await response.json()
+				headers: {
+					'Accept': 'application/json',
+					'token': user.token,
+				},
+				fields: {'token': user.token}
+			}).promise
+			res = JSON.parse(r.body)
 		}catch(err){
 			console.log('eer: ', err)
 			res = {ok: false, song: null, msg: `${err}`}
 		}
-		return {ok: res.ok, song: res.song, msg: res.msg}
+		return res ? {ok: res.ok, song: res.song, msg: res.msg} : {ok: false}
 	}
 
 	async getToken(body){

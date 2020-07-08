@@ -81,7 +81,8 @@ const Player = (props) => {
 
 	const loadSong = async song => {
 		if(song){
-			tp.skip(song)
+			await tp.skip(song)
+			await tp.play()
 		}
 	}
 
