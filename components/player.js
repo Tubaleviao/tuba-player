@@ -15,23 +15,26 @@ const Player = (props) => {
 	useEffect(() => navigation.addListener('focus', async () =>{
 		const song = await AsyncStorage.getItem('newSong')
 		if(song){
+			let u = JSON.parse(await AsyncStorage.getItem('user')).username
 			if(songs.length === 0) loadSong(song)
-			setSongs([song, ...songs ])
+			songs.push(song)
+			setSongs([...songs])
+			tp.add([getTrack(u, song)])
 			await AsyncStorage.removeItem('newSong')
 		}
 	}), [])
 
 	useEffect(() => navigation.addListener('blur', async () =>{}), [])
 
-	const [songs, setSongs] = useState(props.route.params.songs || []) 
-	const [user, setUser] = useState(props.route.params.user || 'None')
-	const [trackPos, setTrackPos] = useState(0)
+	const [songs, setSongs] = useState(props.route.params ? props.route.params.songs || [] : []) 
+	const [user, setUser] = useState(props.route.params ? props.route.params.user || 'None' : 'None')
+	//const [trackPos, setTrackPos] = useState(0)
 	const [sliding, setSliding] = useState(false)
 	const [music, setMusic] = useState('')
-	const [maxPos, setMaxPos] = useState(0) // mounted
+	//const [maxPos, setMaxPos] = useState(0) // mounted
 	const [playing, setPlaying] = useState(false)
 	const [error, setError] = useState(false)
-	const [mounted, setMounted] = useState(true)
+	//const [mounted, setMounted] = useState(true)
 	const t = { artist: '', album: '', genre: '', 
 				date: '2020-06-29T07:00:00+00:00', artwork:'https://tuba.work/img/icon.ico'}
 	
@@ -49,9 +52,10 @@ const Player = (props) => {
 		<Icon style={styles.iconStyle} name={name.name} size={32} color="lime" />
 	</TouchableHighlight>)
 
-	const getNewSong = () => {
-		let len = songs.length
-		return songs[Math.floor(Math.random()*len)]
+	const getTrack = (u, s) => {
+		//let u = JSON.parse(await AsyncStorage.getItem('user')).username
+		const uri = `https://tuba.work/users/${u}/${s}`
+		return { ...t, id:s, title: s, url: uri}
 	}
 
 	const inite = async () => {
@@ -70,48 +74,47 @@ const Player = (props) => {
 				tp.CAPABILITY_PAUSE
 			]
 		})
-		await tp.add(songs.map(s => {
-			const uri = `https://tuba.work/users/${user}/${s}`
-			return { ...t, id:s, title: s, url: uri}
-		}))
-		setMusic(songs[0])
-		tp.play() 
-		setPlaying(true)
+		
+		if(songs.length>0){
+			let u = JSON.parse(await AsyncStorage.getItem('user')).username
+			await tp.add(songs.map(s => getTrack(u, s)))
+			await tp.play() 
+			setMusic(songs[0])
+			setPlaying(true)
+		}
 	}
 
 	const loadSong = async song => {
 		if(song){
+			console.log(song)
 			await tp.skip(song)
 			await tp.play()
 		}
 	}
 
-	const updatePlayer = async st => {
-		if(st && mounted && st.isLoaded){
-			const newPos = st.positionMillis
-			if(trackPos !== newPos) setTrackPos(newPos)
-			if(maxPos!==st.durationMillis) setMaxPos(st.durationMillis)
-			if(st.didJustFinish) setTrackPos(0)
-			if(st.didJustFinish) loadSong(getNewSong())
-		}
+	const updateSongs = async s => {
+		songs.push(s)
+		setMusic(songs[0])
+		await inite()
 	}
 
 	let onTrackChange;
 	let onEnded;
 	
 	useEffect(() => {
-		setMounted(true)
-		onEnded = tp.addEventListener('playback-queue-ended', async data => inite())
+		onEnded = tp.addEventListener('playback-queue-ended', async data => {
+			if(data.position !==0 && data.track !== null) inite()
+		})
 		onTrackChange = tp.addEventListener('playback-track-changed', async data => {    
             const track = await tp.getTrack(data.nextTrack);
             if(track != null) setMusic(track.title);
-        })
+		})
 		inite()
-		return function cleanup(){ 
-			setMounted(false)
+		return function cleanup(){
 			onTrackChange.remove()
 			onEnded.remove()
 			tp.destroy()
+			console.log("destroying")
 		}
 	}, [])
 
@@ -119,7 +122,7 @@ const Player = (props) => {
 		<SafeAreaView style={styles.app}>
 			<StatusBar barStyle="light-content" backgroundColor="#000000" />
 			{error && <Text style={styles.error}>{error}</Text>}
-			{!songs.length ? ( <Upload /> ) : (
+			{!songs.length ? ( <Upload ss={updateSongs} /> ) : (
 				<View style={styles.container}>
 					<Text style={styles.container}>{music}</Text>
 					<Progress ss={setSliding} s={sliding} />

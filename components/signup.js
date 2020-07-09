@@ -27,10 +27,10 @@ class Signup extends React.Component{
 			user.loading = false
 			this.setState(user)
 			const resetAction = CommonActions.reset({ index: 1,
-                routes: [{name: 'Home', params: {songs: [], user: username}}],
+                routes: [{name: 'Home'},],
             });
             this.props.navigation.dispatch(resetAction); 
-			
+			//this.props.navigation.replace('Home',{screen: "Player", params: {songs: [], user: username}})
 		}else{
 			this.setState({error: user.error, loading: false})
 		}
@@ -55,6 +55,7 @@ class Signup extends React.Component{
 				</View>
 				<View style={styles.container}>
 					<TextInput 
+						autoCapitalize='none'
 						style={styles.input} 
 						onChangeText={t => this.change({name: "email", value: t})} 
 						autoCompleteType="email" 

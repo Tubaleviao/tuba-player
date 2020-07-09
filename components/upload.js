@@ -38,9 +38,14 @@ class Upload extends React.Component{
 		if(file.filetype){
 			const worked = await Api.sendAudio(file)
 			if(worked.ok){
-				await AsyncStorage.setItem('newSong', worked.song)
+				const {ss} = this.props
 				this.setState({loading: false})
-				this.props.navigation.goBack()
+				if(ss){
+					ss(worked.song)
+				}else{
+					await AsyncStorage.setItem('newSong', worked.song)
+					this.props.navigation.goBack()
+				}
 			}else{this.setState({error: worked.msg, loading: false})}
 		}
 	}

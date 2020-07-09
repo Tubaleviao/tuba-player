@@ -88,7 +88,6 @@ class Api {
 	async signup(body){
 		let result
 		try{
-			console.log(body)
 			const response = await fetch(`https://tuba.work/join`, {
 				method: 'POST',
 				headers: {'Accept': 'application/json',
