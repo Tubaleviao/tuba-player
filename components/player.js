@@ -49,7 +49,7 @@ const Player = (props) => {
 	const setTrack = v => { tp.seekTo(v/1000); setSliding(false); setTrackPos(v)} // so.setPositionAsync(v);
 	// this[name]
 	const icon = name => (<TouchableHighlight onPress={name} activeOpacity={0.4}>
-		<Icon style={styles.iconStyle} name={name.name} size={32} color="lime" />
+		<Icon style={styles.iconStyle} name={name.name} size={32} color="#00ff00" />
 	</TouchableHighlight>)
 
 	const getTrack = (u, s) => {
@@ -124,13 +124,24 @@ const Player = (props) => {
 			{error && <Text style={styles.error}>{error}</Text>}
 			{!songs.length ? ( <Upload ss={updateSongs} /> ) : (
 				<View style={styles.container}>
+					
 					<Text style={styles.container}>{music}</Text>
 					<Progress ss={setSliding} s={sliding} />
 					<View style={styles.icons}>
 						<View style={styles.iconContainer}>
-							{playing ? icon(pause) : icon(play)} 
-							{icon(forward)} 
-							{icon(stop)}
+							{ playing ? 
+								<TouchableHighlight onPress={pause} activeOpacity={0.4}>
+									<Icon style={styles.iconStyle} name="pause" size={32} color="#00ff00" />
+								</TouchableHighlight> : 
+								<TouchableHighlight onPress={play} activeOpacity={0.4}>
+									<Icon style={styles.iconStyle} name="play" size={32} color="#00ff00" />
+								</TouchableHighlight>}
+							<TouchableHighlight onPress={forward} activeOpacity={0.4}>
+								<Icon style={styles.iconStyle} name="forward" size={32} color="#00ff00" />
+							</TouchableHighlight>
+							<TouchableHighlight onPress={stop} activeOpacity={0.4}>
+							<Icon style={styles.iconStyle} name="stop" size={32} color="#00ff00" />
+						</TouchableHighlight>
 						 </View>
 					</View>
 				</View>
