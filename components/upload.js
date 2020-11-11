@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaView, Button, StyleSheet, Text, ActivityIndicator } from 'react-native'
-import AsyncStorage from '@react-native-community/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import Api from './api'
 import DocumentPicker from 'react-native-document-picker'
 import RNFS from 'react-native-fs';

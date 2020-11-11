@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaView, View, Text, TextInput, Button, StyleSheet, StatusBar} from 'react-native'
-import AsyncStorage from '@react-native-community/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import api from './api'
 
 class Login extends React.Component {
@@ -9,9 +9,27 @@ class Login extends React.Component {
 		super(props)
 	}
 
+	componentDidMount(){
+		AsyncStorage.getItem('user').then(user => {
+			const j = JSON.parse(user)
+			let loadSongs = async st => {
+				st.songs = await api.getSongs(j)
+				this.setState(st)
+				this.props.navigation.replace('Home', {
+					screen: "Player", params: {songs: st.songs, user: st.user.username}})
+			}
+			if(j && j.username){
+				console.log(j)
+				let st ={user: j, error:false, loading:false}
+				loadSongs(st)
+			}
+			
+		})
+	}
+
 	state = {
 		user: false,
-		loading: !(AsyncStorage.getItem('user')==null), // async
+		loading: false, // async
 		error: false,
 		username: "",
 		pass: "", // get, set, remove 

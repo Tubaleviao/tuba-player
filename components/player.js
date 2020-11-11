@@ -1,15 +1,14 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import SongList from './songList'
-import { SafeAreaView, AppState, View, Text, StyleSheet, TouchableHighlight, StatusBar } from 'react-native'
+import { SafeAreaView, View, Text, StyleSheet, TouchableHighlight, StatusBar } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Upload from './upload'
 import Progress from './progress'
-import AsyncStorage from '@react-native-community/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import tp from 'react-native-track-player'
 
 const Player = (props) => {
 
-	const {useState, useEffect} = React
 	const {navigation} = props
 
 	useEffect(() => navigation.addListener('focus', async () =>{
@@ -124,7 +123,6 @@ const Player = (props) => {
 			{error && <Text style={styles.error}>{error}</Text>}
 			{!songs.length ? ( <Upload ss={updateSongs} /> ) : (
 				<View style={styles.container}>
-					
 					<Text style={styles.container}>{music}</Text>
 					<Progress ss={setSliding} s={sliding} />
 					<View style={styles.icons}>

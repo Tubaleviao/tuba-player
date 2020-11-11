@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaView, View, Text, TextInput, Button,StyleSheet, StatusBar } from 'react-native'
-import AsyncStorage from '@react-native-community/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import api from './api'
 import { CommonActions } from '@react-navigation/native';
 
