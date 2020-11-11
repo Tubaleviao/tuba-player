@@ -56,18 +56,13 @@ class Upload extends React.Component{
 			<SafeAreaView style={styles.app}>
 				{error && <Text style={styles.error}>{error}</Text>}
 				<Text style={styles.container}> Try adding new songs!{"\n"} 
-					To select multiple files, try the webpage {"\n"}
-					<Text style={{color:'lime', textDecorationLine: 'underline',}} 
-						onPress={() => Linking.openURL('https://tuba.work/player')}>
-						tuba.work/player
-					</Text>
+					
 				</Text>
 				<Button title="Upload" onPress={this.pickSong} />
 				{loading?<ActivityIndicator size="large" color="#00ff00" />:<Text></Text>}
 			</SafeAreaView>
 		)
 	}
-	
 }
 
 export default Upload
@@ -90,3 +85,11 @@ const styles = StyleSheet.create({
 	    margin: 10,
 	},
 })
+
+/*
+To select multiple files, try the webpage {"\n"}
+		<Text style={{color:'lime', textDecorationLine: 'underline',}} 
+			onPress={() => Linking.openURL('https://tuba.work/player')}>
+			tuba.work/player
+		</Text>
+*/
