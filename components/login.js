@@ -19,20 +19,18 @@ class Login extends React.Component {
 					screen: "Player", params: {songs: st.songs, user: st.user.username}})
 			}
 			if(j && j.username){
-				console.log(j)
 				let st ={user: j, error:false, loading:false}
 				loadSongs(st)
 			}
-			
 		})
 	}
 
 	state = {
 		user: false,
-		loading: false, // async
+		loading: false,
 		error: false,
 		username: "",
-		pass: "", // get, set, remove 
+		pass: "",
 	}
 
 	change = event => {
