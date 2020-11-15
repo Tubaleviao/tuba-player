@@ -13,7 +13,7 @@ project.ext.react = [
 
 apply from: "../../node_modules/react-native/react.gradle"
 
-def enableSeparateBuildPerCPUArchitecture = false
+def enableSeparateBuildPerCPUArchitecture = true
 
 def enableProguardInReleaseBuilds = false
 
