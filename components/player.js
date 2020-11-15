@@ -25,34 +25,24 @@ const Player = (props) => {
 
 	useEffect(() => navigation.addListener('blur', async () =>{}), [])
 
-	const [songs, setSongs] = useState(props.route.params ? props.route.params.songs || [] : []) 
-	const [user, setUser] = useState(props.route.params ? props.route.params.user || 'None' : 'None')
-	//const [trackPos, setTrackPos] = useState(0)
+	const [songs, setSongs] = useState(props.route.params ? props.route.params.songs || [] : [])
 	const [sliding, setSliding] = useState(false)
 	const [music, setMusic] = useState('')
-	//const [maxPos, setMaxPos] = useState(0) // mounted
 	const [playing, setPlaying] = useState(false)
 	const [error, setError] = useState(false)
-	//const [mounted, setMounted] = useState(true)
 	const t = { artist: '', album: '', genre: '', 
 				date: '2020-06-29T07:00:00+00:00', artwork:'https://tuba.work/img/icon.ico'}
 	
-	const play =  async() => { tp.play(); setPlaying(true)} // so.playAsync();
-	const stop = async () => { tp.stop(); setPlaying(false)} // so.stopAsync();
-	const pause = async () => {tp.pause(); setPlaying(false)} // so.pauseAsync(); 
+	const play =  async() => { tp.play(); setPlaying(true)} 
+	const stop = async () => { tp.stop(); setPlaying(false)} 
+	const pause = async () => {tp.pause(); setPlaying(false)}
 
-	//const backwards = async () => tp.skipToPrevious()
 	const forward = async () => tp.skipToNext().catch(inite)
-	//const repeat = async () => {tp.pause()} // so.pauseAsync()
-	//random = async () => this.state.so.pauseAsync()
-	const setTrack = v => { tp.seekTo(v/1000); setSliding(false); setTrackPos(v)} // so.setPositionAsync(v);
-	// this[name]
 	const icon = name => (<TouchableHighlight onPress={name} activeOpacity={0.4}>
 		<Icon style={styles.iconStyle} name={name.name} size={32} color="#00ff00" />
 	</TouchableHighlight>)
 
 	const getTrack = (u, s) => {
-		//let u = JSON.parse(await AsyncStorage.getItem('user')).username
 		const uri = `https://tuba.work/users/${u}/${s}`
 		return { ...t, id:s, title: s, url: uri}
 	}
