@@ -5,15 +5,18 @@ import {StyleSheet, FlatList, SafeAreaView, Text, TouchableHighlight, TextInput}
 
 const SongList = ({navigation, songList=[], play}) => {
 	const [songs, setSongs] = useState(songList)
-	let changing = new BehaviorSubject('')
-	let changingTreated = changing.pipe(debounceTime(500), distinctUntilChanged(), filter(val => val.length>0))
-
+	let changing = new BehaviorSubject()
+	let changingTreated = changing.pipe(debounceTime(300), distinctUntilChanged(), filter(v => v))
+	
 	useEffect(() => {
 		let subs = changingTreated.subscribe(v => {
-			setSongs(songList.filter(s => s.toLowerCase().includes(v.toLowerCase())))
+			setSongs([...songList.filter(s => s.toLowerCase().includes(v.toLowerCase()))])
 		})
-		return () => subs.unsubscribe()
-	}, [changingTreated, setSongs])
+		let subs2 = changing.subscribe(v => {if(v==='' && songs.length!=songList.length) setSongs([...songList])})
+		return () => {subs.unsubscribe(); subs2.unsubscribe()}
+	}, [changingTreated])
+
+	useEffect(() => setSongs([...songList]), [songList])
 
 	let handle = v => changing.next(v)
 

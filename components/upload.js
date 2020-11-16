@@ -36,18 +36,54 @@ class Upload extends React.Component{
 		}
 
 		if(file.filetype){
-			const worked = await Api.sendAudio(file)
+			const worked = await Api.sendAudio([file])
 			if(worked.ok){
 				const {ss} = this.props
 				this.setState({loading: false})
-				if(ss){
-					ss(worked.song)
-				}else{
-					await AsyncStorage.setItem('newSong', worked.song)
+				if(ss) ss(worked.song)
+				else{
+					await AsyncStorage.setItem('newSong', typeof worked.song==="string" ? JSON.stringify([worked.song]) : JSON.stringify(worked.song))
 					this.props.navigation.goBack()
 				}
 			}else{this.setState({error: worked.msg, loading: false})}
 		}
+	}
+
+	pickSongs = async () => {
+		this.setState({loading: true})
+		// Pick a multiple files
+		
+		let files = []
+		try {
+			const res = await DocumentPicker.pickMultiple({
+				type: [DocumentPicker.types.audio],
+			})
+			files = await Promise.all(res.map(async f => {
+				let tmpPath = `${RNFS.DocumentDirectoryPath}/${f.name}`
+				let fullFile = await RNFS.readFile(f.uri, 'base64')
+				await RNFS.writeFile(tmpPath, fullFile, 'base64')
+				return {
+					name: f.name, 
+					filename: f.name, 
+					filepath: tmpPath, 
+					filetype: f.type
+				}
+			}))
+		} catch (err) {
+			console.log(err)
+			this.setState({loading: false, error: "Error, please try again"})
+		}
+		files = files.filter( f => f.filetype)
+		const worked = await Api.sendAudio(files)
+		if(worked.ok){
+			const {ss} = this.props
+			this.setState({loading: false})
+			if(ss) ss(worked.song)
+			else{
+				await AsyncStorage.setItem('newSong', typeof worked.song==="string" ? JSON.stringify([worked.song]) : JSON.stringify(worked.song))
+				this.props.navigation.goBack()
+			}
+		}else{this.setState({error: worked.msg, loading: false})}
 	}
 
 	render() {
@@ -55,10 +91,9 @@ class Upload extends React.Component{
 		return (
 			<SafeAreaView style={styles.app}>
 				{error && <Text style={styles.error}>{error}</Text>}
-				<Text style={styles.container}> Try adding new songs!{"\n"} 
-					
-				</Text>
-				<Button title="Upload" onPress={this.pickSong} />
+				<Text style={styles.container}> Try adding new songs!{"\n"} </Text>
+				<Button title="Upload One" onPress={this.pickSong} />
+				<Button title="Upload Multiple" onPress={this.pickSongs} />
 				{loading?<ActivityIndicator size="large" color="#00ff00" />:<Text></Text>}
 			</SafeAreaView>
 		)
@@ -81,15 +116,7 @@ const styles = StyleSheet.create({
 	error: {
 		textAlign: 'center',
     	backgroundColor: '#000000',
-	    color: '#ff0000',
+	    color: '#550000',
 	    margin: 10,
 	},
 })
-
-/*
-To select multiple files, try the webpage {"\n"}
-		<Text style={{color:'lime', textDecorationLine: 'underline',}} 
-			onPress={() => Linking.openURL('https://tuba.work/player')}>
-			tuba.work/player
-		</Text>
-*/

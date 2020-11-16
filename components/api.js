@@ -1,17 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import RNFS from 'react-native-fs';
+const host = 'https://tuba.work'
 
 class Api {
 
-	async sendAudio(audio){
+	async sendAudio(files){
 		let user = await AsyncStorage.getItem('user')
 		user = JSON.parse(user)
 		let res
 		try{
-			let url = `https://tuba.work/audio/${user.username}`
-			const r = await RNFS.uploadFiles({
+			let url = `${host}/audio/${user.username}`
+			let r = await RNFS.uploadFiles({
 				toUrl: url, 
-				files: [audio], 
+				files: files, 
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',
@@ -21,7 +22,7 @@ class Api {
 			}).promise
 			res = JSON.parse(r.body)
 		}catch(err){
-			console.log('eer: ', err)
+			console.log('eer: ', err, res)
 			res = {ok: false, song: null, msg: `${err}`}
 		}
 		return res ? {ok: res.ok, song: res.song, msg: res.msg} : {ok: false}
@@ -30,7 +31,7 @@ class Api {
 	async getToken(body){
 		let result
 		try{
-			const response = await fetch(`https://tuba.work/jwt`, {
+			const response = await fetch(`${host}/jwt`, {
 				method: 'POST',
 				headers: {'Accept': 'application/json',
 							'Content-Type': 'application/json'},
@@ -79,7 +80,7 @@ class Api {
 
 	async getSongs(user){
 		const options = {headers: {"token": user.token}}
-		let response = await fetch(`https://tuba.work/songs`, options)
+		let response = await fetch(`${host}/songs`, options)
 		if(response.ok) response = await response.json()
 		else response = []
 		return response
@@ -88,7 +89,7 @@ class Api {
 	async signup(body){
 		let result
 		try{
-			const response = await fetch(`https://tuba.work/join`, {
+			const response = await fetch(`${host}/join`, {
 				method: 'POST',
 				headers: {'Accept': 'application/json',
 							'Content-Type': 'application/json'},

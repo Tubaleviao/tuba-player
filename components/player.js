@@ -11,25 +11,25 @@ const Player = (props) => {
 
 	const {navigation} = props
 
+	const [songs, setSongs] = useState(props.route.params ? props.route.params.songs || [] : [])
+	const [sliding, setSliding] = useState(false)
+	const [music, setMusic] = useState('')
+	const [playing, setPlaying] = useState(false)
+	const [error, setError] = useState(false)
+
 	useEffect(() => navigation.addListener('focus', async () =>{
-		const song = await AsyncStorage.getItem('newSong')
+		const song = JSON.parse(await AsyncStorage.getItem('newSong'))
 		if(song){
 			let u = JSON.parse(await AsyncStorage.getItem('user')).username
-			if(songs.length === 0) loadSong(song)
-			songs.push(song)
-			setSongs([...songs])
-			tp.add([getTrack(u, song)])
+			if(songs.length === 0) loadSong(song[0])
+			setSongs(songs => ([...songs.concat(song)]))
+			tp.add(song.map( s => getTrack(u, s)))
 			await AsyncStorage.removeItem('newSong')
 		}
 	}), [])
 
 	useEffect(() => navigation.addListener('blur', async () =>{}), [])
 
-	const [songs, setSongs] = useState(props.route.params ? props.route.params.songs || [] : [])
-	const [sliding, setSliding] = useState(false)
-	const [music, setMusic] = useState('')
-	const [playing, setPlaying] = useState(false)
-	const [error, setError] = useState(false)
 	const t = { artist: '', album: '', genre: '', 
 				date: '2020-06-29T07:00:00+00:00', artwork:'https://tuba.work/img/icon.ico'}
 	
@@ -82,7 +82,10 @@ const Player = (props) => {
 	}
 
 	const updateSongs = async s => {
-		songs.push(s)
+		switch(typeof s){
+			case "string": songs.push(s); break;
+			case "object": s.forEach( song => songs.push(song)); break;
+		}
 		setMusic(songs[0])
 		await inite()
 	}
@@ -132,9 +135,10 @@ const Player = (props) => {
 						</TouchableHighlight>
 						 </View>
 					</View>
+					<SongList songList={songs} navigation={navigation} play={loadSong}/>
 				</View>
 			)}
-			<SongList songList={songs} navigation={navigation} play={loadSong}/>
+			
 		</SafeAreaView>)
 }
 
@@ -167,7 +171,7 @@ const styles = StyleSheet.create({
 	error: {
 		textAlign: 'center',
     	backgroundColor: '#000000',
-	    color: '#ff0000',
+	    color: '#550000',
 	    margin: 10,
 	},
 });
