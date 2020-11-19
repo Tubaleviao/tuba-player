@@ -27,7 +27,7 @@ $ ./gradlew bundleRelease
 * Test the release app with ```npm run android --variant=release```.
 * Make sure the React window in in sync with the android emulator.
 * Upload the generated app from ```android/app/build/outputs/bundle/release/app.aab``` to https://play.google.com/console.
-* Do it so by accessing ```Production > Create New Release```.
+* Do it so by choosing your app and accessing ```Production > Create New Release```.
 
 ## TODO
 
