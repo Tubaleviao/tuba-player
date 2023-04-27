@@ -1,36 +1,36 @@
-import React, {useState, useEffect} from 'react'
-import { BehaviorSubject} from 'rxjs'
-import {debounceTime, distinctUntilChanged, filter} from 'rxjs/operators'
-import {StyleSheet, FlatList, SafeAreaView, Text, TouchableHighlight, TextInput} from 'react-native'
+import React, { useState, useEffect, memo } from 'react'
+import { BehaviorSubject } from 'rxjs'
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators'
+import { StyleSheet, FlatList, SafeAreaView, TextInput } from 'react-native'
+import SongItem from "./songItem"
 
-const SongList = ({navigation, songList=[], play}) => {
-	const [songs, setSongs] = useState(songList)
+const SongList = ({ songList = [], play }) => {
+	const [songs, setSongs] = useState(songList.map((s,i) => ({id: i, name: s})))
 	let changing = new BehaviorSubject()
 	let changingTreated = changing.pipe(debounceTime(300), distinctUntilChanged(), filter(v => v))
-	
+
 	useEffect(() => {
 		let subs = changingTreated.subscribe(v => {
-			setSongs([...songList.filter(s => s.toLowerCase().includes(v.toLowerCase()))])
+			setSongs([...songList.map((s,i) => ({id: i, name: s})).filter(s => s.name.toLowerCase().includes(v.toLowerCase()) )])
 		})
-		let subs2 = changing.subscribe(v => {if(v==='' && songs.length!=songList.length) setSongs([...songList])})
-		return () => {subs.unsubscribe(); subs2.unsubscribe()}
+		let subs2 = changing.subscribe(v => { if (v === '') setSongs(songList.map((s,i) => ({id: i, name: s}))) })
+		return () => { subs.unsubscribe(); subs2.unsubscribe() }
 	}, [changingTreated])
 
-	useEffect(() => setSongs([...songList]), [songList])
+	useEffect(() => setSongs(songList.map((s,i) => ({id: i, name: s}))), [songList])
 
 	let handle = v => changing.next(v)
 
-	let counter=0
 	return (
 		<SafeAreaView>
 			<TextInput style={styles.input} placeholder="Search..." placeholderTextColor='#050' onChangeText={handle}></TextInput>
 			<FlatList data={songs}
-				renderItem={({item}) => (
-					<TouchableHighlight 
-						onPress={() => play(item.substr(item.lastIndexOf('/')+1))} >
-						<Text style={styles.item}>{item}</Text>
-					</TouchableHighlight>)}
-				keyExtractor={item => String(++counter)}
+				initialNumToRender={7}
+				renderItem={({ item }) => {
+					return (<SongItem play={play} song={item} ></SongItem>)
+				}
+			}
+				keyExtractor={song => song.id}
 			/>
 		</SafeAreaView>
 	)
@@ -39,22 +39,14 @@ const SongList = ({navigation, songList=[], play}) => {
 export default SongList
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 32,
-  },
-  item: {
-  	color: '#00ff00',
-    backgroundColor: '#002200',
-    padding: 16,
-    marginVertical: 4,
-	marginHorizontal: 16,
-	textAlign: "center",
-  },
-  input: {
-	  borderColor: '#005500',
-	  borderWidth: 1,
-	  marginBottom: 4,
-	  marginHorizontal: 32,
-	  color: '#00ff00',
-  }
+	title: {
+		fontSize: 32,
+	},
+	input: {
+		borderColor: '#005500',
+		borderWidth: 1,
+		marginBottom: 4,
+		marginHorizontal: 32,
+		color: '#00ff00',
+	}
 });

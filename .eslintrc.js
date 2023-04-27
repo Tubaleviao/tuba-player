@@ -1,4 +1,8 @@
 module.exports = {
   root: true,
-  extends: '@react-native-community',
+  "format_on_save": true,
+  rules: {
+    indent: ["error", "tab"],
+    "no-unused-vars": "off"
+  }
 };

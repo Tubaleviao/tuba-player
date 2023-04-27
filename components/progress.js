@@ -1,19 +1,18 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import Slider from '@react-native-community/slider'
-import tp from 'react-native-track-player'
+import tp, { useProgress } from 'react-native-track-player'
 
-class Progress extends tp.ProgressComponent {
+const Progress = (props) => {
+    const { position, duration } = useProgress()
+    const { sliding, setSliding } = props // sliding, setSliding
 
-    render() {
-        const {s, ss} = this.props
-        return (
-            <View>
-                <Slider onValueChange={() => !s ? ss(true) : true}
-						onSlidingComplete={v => tp.seekTo(v*this.state.duration)} 
-						value={this.getProgress()} />
-            </View>
-        );
-    }   
+    return (
+        <View>
+            <Slider onValueChange={() => !sliding ? setSliding(true) : true}
+                onSlidingComplete={v => tp.seekTo(v * duration)}
+                value={position / duration || 0} />
+        </View>
+    );
 }
 export default Progress

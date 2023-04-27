@@ -12,8 +12,9 @@ Follow this guide to setup your environment: https://reactnative.dev/docs/enviro
 
 ## To publish or update your app: 
 
+* Make sure you have the .keystore file into android/app.
 * Change the app version manually at ```android/app/build.gradle``` in defaultConfig.
-* Set the app password in ```android/gradle.properties```.
+* Set the app credentials in ```android/gradle.properties```.
 * (Once) Run ```keytool -genkeypair -v -keystore tubaplayer.keystore -alias tubaplayer -keyalg RSA -keysize 2048 -validity 10000```.
 * (Once) Place the generated .keystore file inside ```android/app```.
 * Build a release APK:
