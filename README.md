@@ -2,10 +2,11 @@
 
 You can find it in production at Play Store: https://play.google.com/store/apps/details?id=com.tubaplayer
 
-Installing instructions:
+Running instructions:
 
 ```
 npm install
+npm start -- --reset-cache
 ```
 
 Follow this guide to setup your environment: https://reactnative.dev/docs/environment-setup
